@@ -14,9 +14,9 @@ import os
 import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-apps_path=os.path.join(BASE_DIR,"apps")
-print(sys.path)
-sys.path.insert(0,apps_path)
+# apps_path=os.path.join(BASE_DIR,"apps")
+# print(sys.path)
+# sys.path.insert(0,apps_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -28,7 +28,6 @@ SECRET_KEY = 'jxl7w#5m*02m3$ay9moi88048f%-4p&50b6c=hfbltn$8%(b%='
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -42,6 +41,7 @@ INSTALLED_APPS = [
     # 'users.apps.UsersConfig',
     # 'users',
     'apps.users',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://www.meiduo.site:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
 
 ROOT_URLCONF = 'meiduo_mall.urls'
 
@@ -116,7 +125,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
 
 
-
+# 指定本项目使用我们自定义的模型类:
+AUTH_USER_MODEL = 'users.User'
 
 
 
