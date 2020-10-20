@@ -7,6 +7,7 @@ urlpatterns = [
 # http://www.meiduo.site:8000/usernames/itcast/count/
     path('usernames/<username:username>/count/',views.UsernameCountView.as_view()),
 # /mobiles/(?P<mobile>1[3-9]\d{9})/count/
-    path('mobiles/<mobile:mobile>/count/',views.MobileCountView.as_view())
+    path('mobiles/<mobile:mobile>/count/',views.MobileCountView.as_view()),
+    path('register/',views.RegisterView.as_view()),
 
 ]
