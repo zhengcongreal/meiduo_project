@@ -9,5 +9,9 @@ urlpatterns = [
 # /mobiles/(?P<mobile>1[3-9]\d{9})/count/
     path('mobiles/<mobile:mobile>/count/',views.MobileCountView.as_view()),
     path('register/',views.RegisterView.as_view()),
+    path('register/',views.RegisterView.as_view()),
+    path('login/',views.LoginView.as_view()),
+    path('logout/',views.LogoutView.as_view()),
+    path('info/',views.UserInfoView.as_view()),
 
 ]

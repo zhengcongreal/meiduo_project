@@ -1,15 +1,16 @@
 # Create your views here.
 import random
-
 from django import http
 from django.views import View
 from django.http import HttpResponse
 from django_redis import get_redis_connection
-
 from apps.verifications.libs.captcha import captcha
-from apps.verifications.libs.yuntongxun.ccp_sms import CCP
+from celery_tasks.sms.tasks import ccp_send_sms_code
+
 import logging
-logger=logging.getLogger('django')
+
+logger = logging.getLogger('django')
+
 
 class ImageCodeView(View):
     '''返回图形验证码的类视图'''
@@ -35,64 +36,67 @@ class ImageCodeView(View):
         return HttpResponse(image,
                             content_type='image/jpg')
 
+
 class SMSCodeView(View):
-    def get(self,request,mobile):
-        # 往redis中存入数据, key值和value值随意指定, 但是时间必须为60s
-        # 例如这里key:value为:  send_flag_mobile:1  时间为 60
+    def get(self, request, mobile):
+
         # 1. 创建连接到redis的对象
         redis_conn = get_redis_connection('verify_code')
-        send_flag_mobile=redis_conn.get('send_flag_%s'%mobile)
+        # 进入函数后, 先获取存储在 redis 中的数据
+        send_flag_mobile = redis_conn.get('send_flag_%s' % mobile)
+        # 查看数据是否存在, 如果存在, 说明60s没过, 返回
         if send_flag_mobile:
-            return http.JsonResponse({'code':'400','errmsg':'发送短信频率太快了，亲稍后再试！'})
+            return http.JsonResponse({'code': '400', 'errmsg': '发送短信频率太快了，请稍后再试！'})
 
+        # 2. 接收参数
+        image_code_client = request.GET.get("image_code")
+        uuid = request.GET.get("image_code_id")
+        # 3. 校验参数
+        if not all([image_code_client, uuid]):
+            return http.JsonResponse({'code': '400', 'errmsg': '缺少必传参数！'})
 
-    # 2. 接收参数
-        image_code_client  = request.GET.get("image_code")
-        uuid=request.GET.get("image_code_id")
-    # 3. 校验参数
-        if not all([image_code_client,uuid]):
-            return http.JsonResponse({'code':'400','errmsg':'缺少必传参数！'})
-
-
-    # 4. 提取图形验证码
-        image_code_server=redis_conn.get('img_%s'%uuid)
-    # 图形验证码过期或者不存在
+        # 4. 提取图形验证码
+        image_code_server = redis_conn.get('img_%s' % uuid)
+        # 图形验证码过期或者不存在
         if not image_code_server:
-            return http.JsonResponse({'code':'400','errmsg':'图形验证码失效,请点击图形验证码刷新！'})
-    # 5. 删除图形验证码，避免恶意测试图形验证码
+            return http.JsonResponse({'code': '400', 'errmsg': '图形验证码失效,请点击图形验证码刷新！'})
+        # 5. 删除图形验证码，避免恶意测试图形验证码
         try:
-            redis_conn.delete('img_%s'%uuid)
+            redis_conn.delete('img_%s' % uuid)
         except Exception as e:
             logger.error(e)
-    # 6. 对比图形验证码
-    # bytes 转字符串
-        image_code_server=image_code_server.decode()
+        # 6. 对比图形验证码
+        # bytes 转字符串
+        image_code_server = image_code_server.decode()
 
-    # 转小写后比较
-        if image_code_client.lower()!=image_code_server.lower():
-            return http.JsonResponse({'code':'400','errmsg':'图形验证码输入有误！'})
+        # 转小写后比较
+        if image_code_client.lower() != image_code_server.lower():
+            return http.JsonResponse({'code': '400', 'errmsg': '图形验证码输入有误！'})
 
-    # 7. 生成短信验证码：生成6位数验证码
-        random_num=random.randint(0,999999)
-    # 8. 保存短信验证码
-        sms_code=("%06d"%random_num)
+        # 7. 生成短信验证码：生成6位数验证码
+        random_num = random.randint(0, 999999)
+        # 8. 保存短信验证码
+        sms_code = ("%06d" % random_num)
         logger.info(sms_code)
 
         # 创建 Redis 管道
-        pl=redis_conn.pipeline()
+        pl = redis_conn.pipeline()
         # 短信验证码有效期，单位：300秒
-        pl.setex('sms_%s'%mobile,300,sms_code)
-        pl.setex('send_flag_%s'%mobile,60,1)
+        # redis_conn.setex('sms_%s'%mobile,300,sms_code)
+        # 往 redis 中写入一个数据, 写入什么不重要, 时间重要
+        pl.setex('sms_%s' % mobile, 300, sms_code)
+
+        # 我们给写入的数据设置为60s,如果过期,则会获取不到.
+        # redis_conn.setex('send_flag_%s'%mobile,60,1)
+        pl.setex('send_flag_%s' % mobile, 60, 1)
 
         # 执行请求, 这一步千万别忘了
         pl.execute()
-    #     redis_conn.setex('sms_%s'%mobile,300,sms_code)
-        # 往 redis 中写入一个数据, 写入什么不重要, 时间重要
-        # 我们给写入的数据设置为60s,如果过期,则会获取不到.
-        # redis_conn.setex('send_flag_%s'%mobile,60,1)
-    # 9. 发送短信验证码
-        CCP().send_template_sms(mobile, [sms_code, 5], 1)
 
-    # 短信模板
-    # 10. 响应结果
-        return http.JsonResponse({'code':'0','errmsg':'短信发送成功！'})
+        # 9. 发送短信验证码
+        # CCP().send_template_sms(mobile, [sms_code, 5], 1)
+
+        # 改为现在的写法, 注意: 这里的函数,调用的时候需要加: .delay()
+        ccp_send_sms_code.delay(mobile,sms_code)
+        # 10. 响应结果
+        return http.JsonResponse({'code': '0', 'errmsg': '短信发送成功！'})
