@@ -13,7 +13,7 @@ from django_redis import get_redis_connection
 from apps.users.models import User
 import logging
 
-from meiduo_mall.utils.views import LoginRequiredMixin
+from meiduo_mall.utils.views import LoginRequiredJSONMixin
 
 logger=logging.getLogger('django')
 
@@ -166,10 +166,19 @@ class LogoutView(View):
         response.delete_cookie('username')
         return response
 
-class UserInfoView(LoginRequiredMixin,View):
+class UserInfoView(LoginRequiredJSONMixin,View):
     """用户中心"""
     def get(self,request):
-        pass
-        # 判断用户是否登录:
-        # if request.user.is_authenticated():
-        #     pass
+
+        data_dict={
+            'code':0,
+            'errmsg':'ok',
+            'info_data':{
+                'username':'',
+                'mobile':'',
+                'email':'',
+                'email_active':''
+            }
+        }
+
+        return JsonResponse(data_dict)

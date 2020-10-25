@@ -103,10 +103,10 @@ var vm = new Vue({
 		},
         // 发送手机短信验证码
         send_sms_code: function(){
-            if (this.sending_flag == true) {
-                return;
-            }
-            this.sending_flag = true;
+            // if (this.sending_flag == true) {
+            //     return;
+            // }
+            // this.sending_flag = true;
 
             // 校验参数，保证输入框有数据填写
             this.check_phone();
@@ -126,6 +126,7 @@ var vm = new Vue({
                     withCredentials:true,
                 })
                 .then(response => {
+                    if (response.data.code == 0) {
                     // 表示后端发送短信成功
                     // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
                     var num = 60;
@@ -144,6 +145,9 @@ var vm = new Vue({
                             this.sms_code_tip = num + '秒';
                         }
                     }, 1000, 60)
+                    } else {
+                        alert(response.data.errmsg);
+                    }
                 })
                 .catch(error => {
                     if (error.response.status == 400) {
@@ -172,8 +176,12 @@ var vm = new Vue({
                         withCredentials:true,
                     })
                     .then(response => {
+                         if (response.data.code == 0) {
                         // 记录用户登录状态
-                        location.href = 'http://www.meiduo.site:8080/'
+                        location.href = 'http://www.meiduo.site:8080/'}
+                         else {
+                              alert(response.data.errmsg);
+                         }
                     })
                     .catch(error=> {
                         if (error.response.status == 400) {
