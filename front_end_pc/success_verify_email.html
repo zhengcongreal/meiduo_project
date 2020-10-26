@@ -46,7 +46,12 @@
                     withCredentials:true,
                 })
                     .then(response => {
-                        this.success = true;
+                        if(response.data.code==0){
+                            this.success = true;
+                        }
+                        else {
+                            this.success=false
+                        }
                     })
                     .catch(error => {
                         this.success = false;

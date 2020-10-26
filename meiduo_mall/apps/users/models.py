@@ -6,7 +6,7 @@ class User(AbstractUser):
     """自定义用户模型类"""
     # 额外增加 mobile 字段
     mobile=models.CharField(max_length=11,unique=True,verbose_name="手机号")
-
+    email_active=models.BooleanField(default=False,verbose_name="邮箱状态")
     # 对当前表进行相关设置:
     class Meta:
         db_table="tb_users"
