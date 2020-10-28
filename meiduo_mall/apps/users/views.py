@@ -256,7 +256,7 @@ class CreateAddressView(View):
         try:
             # count = Address.objects.filter(user=request.user,
             #                                is_deleted=False).count()
-            count=request.user.addresses.filter(is_deleted=False).count()
+            count = request.user.addresses.filter(is_deleted=False).count()
         except Exception as e:
             return http.JsonResponse({'code': 400,
                                       'errmsg': '获取地址数据出错'})
@@ -293,7 +293,7 @@ class CreateAddressView(View):
         #     if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
         #         return http.JsonResponse({'code': 400,
         #                                   'errmsg': '参数email有误'})
-                # 保存地址信息
+        # 保存地址信息
         try:
             address = Address.objects.create(
                 user=request.user,
@@ -336,8 +336,9 @@ class CreateAddressView(View):
                                   'errmsg': '新增地址成功',
                                   'address': address_dict})
 
+
 class AddressView(View):
-    """用户收货地址"""
+    """展示所有的用户收货地址"""
 
     def get(self, request):
         """提供地址管理界面
@@ -345,7 +346,7 @@ class AddressView(View):
         # 获取所有的地址:
         # addresses = Address.objects.filter(user=request.user,
         #                                    is_deleted=False)
-        addresses=request.user.addresses.filter(is_deleted=False)
+        addresses = request.user.addresses.filter(is_deleted=False)
         # 创建空的列表
         address_dict_list = []
         # 遍历
@@ -363,26 +364,28 @@ class AddressView(View):
                 "email": address.email
             }
 
-            # 将默认地址移动到最前面
+            # 获取默认地址对象
             default_address = request.user.default_address
+            # 遍历查询集找到默认地址对象
             if default_address.id == address.id:
-                  # 查询集 addresses 没有 insert 方法
+                # 将默认地址插入集合第一位
                 address_dict_list.insert(0, address_dict)
             else:
                 address_dict_list.append(address_dict)
 
-
+        # 获取默认地址id
         default_id = request.user.default_address_id
 
-        return http.JsonResponse({'code':0,
-                                  'errmsg':'ok',
-                                  'addresses':address_dict_list,
-                                  'default_address_id':default_id})
+        return http.JsonResponse({'code': 0,
+                                  'errmsg': 'ok',
+                                  'addresses': address_dict_list,
+                                  'default_address_id': default_id})
 
 
 class UpdateDestroyAddressView(View):
     """用户收货地址修改和删除"""
-    def put(self,request,address_id):
+
+    def put(self, request, address_id):
         # 接收参数
         json_dict = json.loads(request.body.decode())
         receiver = json_dict.get('receiver')
@@ -415,6 +418,7 @@ class UpdateDestroyAddressView(View):
 
         try:
             Address.objects.filter(id=address_id).update(
+                user=request.user,
                 title=receiver,
                 receiver=receiver,
                 province_id=province_id,
@@ -429,11 +433,11 @@ class UpdateDestroyAddressView(View):
         except Exception as e:
 
             logger.error(e)
-            return JsonResponse({'code':400,'errmsg':'更新出错了！'})
+            return JsonResponse({'code': 400, 'errmsg': '更新出错了！'})
         else:
-            address=Address.objects.get(id=address_id)
+            address = Address.objects.get(id=address_id)
             address_dict = {
-                "id":address.id,
+                "id": address.id,
                 "title": address.title,
                 "receiver": address.receiver,
                 "province": address.province.name,
@@ -444,13 +448,13 @@ class UpdateDestroyAddressView(View):
                 "tel": address.tel,
                 "email": address.email
             }
-        return JsonResponse({'code': 0, 'errmsg': 'ok','address':address_dict})
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'address': address_dict})
 
-    def delete(self,request,address_id):
+    def delete(self, request, address_id):
 
         try:
-            address=Address.objects.get(id=address_id)
-            address.is_deleted=True
+            address = Address.objects.get(id=address_id)
+            address.is_deleted = True
             address.save()
         except Exception as e:
             logger.error(e)
@@ -460,10 +464,11 @@ class UpdateDestroyAddressView(View):
 
 class UpdateDefaultAddressView(View):
     '''修改默认地址'''
-    def put(self,request,address_id):
+
+    def put(self, request, address_id):
         try:
-            address=Address.objects.get(id=address_id)
-            request.user.default_address=address
+            address = Address.objects.get(id=address_id)
+            request.user.default_address = address
             request.user.save()
         except Exception as e:
             logger.error(e)
@@ -472,16 +477,15 @@ class UpdateDefaultAddressView(View):
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
 
 
-
 class UpdateTitleView(View):
     '''修改title'''
 
     def put(self, request, address_id):
-        json_dict=json.loads(request.body.decode())
+        json_dict = json.loads(request.body.decode())
         title = json_dict.get('title')
         try:
             address = Address.objects.get(id=address_id)
-            address.title=title
+            address.title = title
             address.save()
 
         except Exception as e:
@@ -490,13 +494,15 @@ class UpdateTitleView(View):
 
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
 
+
 class UpdatePasswordView(View):
     '''修改密码'''
-    def put(self,request):
-        json_data=json.loads(request.body.decode())
-        old_password=json_data.get('old_password')
-        new_password=json_data.get('new_password')
-        new_password2=json_data.get('new_password2')
+
+    def put(self, request):
+        json_data = json.loads(request.body.decode())
+        old_password = json_data.get('old_password')
+        new_password = json_data.get('new_password')
+        new_password2 = json_data.get('new_password2')
 
         # 校验参数
         if not all([old_password, new_password, new_password2]):
