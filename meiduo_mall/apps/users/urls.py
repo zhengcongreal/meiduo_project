@@ -15,5 +15,11 @@ urlpatterns = [
     path('info/',views.UserInfoView.as_view()),
     path('emails/',views.EmailView.as_view()),
     path('emails/verification/',views.verifyEmailView.as_view()),
+    path('addresses/create/',views.CreateAddressView.as_view()),
+    path('addresses/',views.AddressView.as_view()),
+    path('addresses/<int:address_id>/',views.UpdateDestroyAddressView.as_view()),
+    path('addresses/<int:address_id>/default/',views.UpdateDefaultAddressView.as_view()),
+    path('addresses/<int:address_id>/title/',views.UpdateTitleView.as_view()),
+    path('password/',views.UpdatePasswordView.as_view()),
 
 ]
