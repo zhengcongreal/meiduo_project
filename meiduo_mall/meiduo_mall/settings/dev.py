@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'apps.verifications',
     'apps.oauth',
     'apps.areas',
+    'apps.contents',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -245,3 +247,17 @@ EMAIL_HOST_PASSWORD = 'mvsoiuhxqruobdaa'
 EMAIL_FROM = 'zhengcong<904307799@qq.com>'
 # 邮箱验证链接
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8080/success_verify_email.html?token='
+
+# 指定django系统使用的文件存储类:
+DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
+
+# 定时任务
+CRONJOBS = [
+    # 每1分钟生成一次首页静态文件
+    ('*/1 * * * *', 'apps.contents.crons.generate_static_index_html', '>> ' + os.path.join(BASE_DIR, 'logs/crontab.log'))
+]
+
+# 解决 crontab 中文问题
+CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+
+FDFS_URL='http://image.meiduo.site:8888/'
