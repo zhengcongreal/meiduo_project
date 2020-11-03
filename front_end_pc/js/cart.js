@@ -63,9 +63,17 @@ var vm = new Vue({
     methods: {
         // 退出
         logoutfunc: function(){
-            sessionStorage.clear();
-            localStorage.clear();
-            location.href = '/login.html';
+            var url = this.host + '/logout/';
+            axios.delete(url, {
+                responseType: 'json',
+                withCredentials:true,
+            })
+                .then(response => {
+                    location.href = 'login.html';
+                })
+                .catch(error => {
+                    console.log(error.response);
+                })
         },
         // 减少操作
         on_minus: function(index){

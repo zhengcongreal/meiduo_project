@@ -64,6 +64,7 @@ class GoodsCategory(BaseModel):
     def __str__(self):
         return self.name
 
+    objects=models.Manager()
 class GoodsChannelGroup(BaseModel):
     """商品频道组"""
     name = models.CharField(max_length=20, verbose_name='频道组名')

@@ -1,5 +1,5 @@
 import os
-
+import time
 from django.conf import settings
 from django.template import loader
 
@@ -7,7 +7,7 @@ from apps.contents.models import GoodsChannel, ContentCategory
 
 
 def generate_static_index_html():
-    import time
+
     print(time.ctime())
 
     # 准备商品分类数据的字典容器

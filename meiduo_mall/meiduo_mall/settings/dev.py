@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.areas',
     'apps.contents',
     'django_crontab',
+    'apps.goods'
 ]
 
 MIDDLEWARE = [

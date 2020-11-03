@@ -16,7 +16,7 @@ var vm = new Vue({
         cat2: {name:''},  // 二级类别
         cat3: {name:''},  // 三级类别,
         cart_total_count: 0, // 购物车总数量
-        cart: [], // 购物车数据
+        carts: [], // 购物车数据
         hot_skus:[] // 热销商品,
     },
     computed: {
@@ -181,7 +181,7 @@ var vm = new Vue({
                     }
                 })
                 .catch(error => {
-                    console.log(error.response.data);
+                    console.log(error);
                 })
         }
     }

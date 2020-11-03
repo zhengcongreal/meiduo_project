@@ -47,11 +47,13 @@
                 })
                     .then(response => {
                         if(response.data.code==0){
-                            this.success = true;
+                             this.success = true;
                         }
-                        else {
-                            this.success=false
+                        else
+                        {
+                             this.success = false;
                         }
+
                     })
                     .catch(error => {
                         this.success = false;
