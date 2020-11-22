@@ -46,7 +46,7 @@
     <div class="common_list_con clearfix">
         <dl>
             <dt>寄送到：</dt>
-            <dd v-for='address in addresses' :class="[(nowsite==address.id)?'current':'']" @click="nowsite=address.id"><input type="radio" name="get_site" :value="address.id" v-model="nowsite">{{ address.province }} {{address.city}} {{ address.district }} {{ address.place }} （{{ address.receiver }} 收） {{ address.mobile }}</dd>
+            <dd v-for='address in addresses' :class="[(nowsite==address.id)?'current':'']" @click="nowsite=address.id"><input type="radio" name="get_site" :value="address.id" v-model="nowsite">{{address.id}} {{ address.province }} {{address.city}} {{ address.district }} {{ address.place }} （{{ address.receiver }} 收） {{ address.mobile }}</dd>
         </dl>
         <a href="user_center_site.html" class="edit_site">编辑收货地址</a>
     </div>

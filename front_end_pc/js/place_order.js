@@ -10,7 +10,7 @@ var vm = new Vue({
         payment_amount: 0,
         order_submitting: false, // 正在提交订单标志
         pay_method: 1, // 支付方式,
-        nowsite:0, // 默认地址
+        nowsite:'', // 默认地址
         addresses: []
     },
     mounted: function(){
@@ -27,6 +27,7 @@ var vm = new Vue({
                 this.addresses = response.data.context.addresses;
                 this.total_count = 0;
                 this.total_amount = 0;
+                this.nowsite=response.data.context.nowsite;
                 for(var i=0; i<this.skus.length; i++){
                     var amount = parseFloat(this.skus[i].price)*this.skus[i].count;
                     this.skus[i].amount = amount.toFixed(2);

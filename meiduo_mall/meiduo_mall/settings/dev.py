@@ -17,6 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # apps_path=os.path.join(BASE_DIR,"apps")
 # print(sys.path)
 # sys.path.insert(0,apps_path)
+print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -38,14 +39,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.users',
     'corsheaders',
+    'django_crontab',
+    'haystack',
+    'rest_framework',
+
+    'apps.users',
     'apps.verifications',
     'apps.oauth',
     'apps.areas',
     'apps.contents',
-    'django_crontab',
-    'apps.goods'
+    'apps.goods',
+    'apps.carts',
+    'apps.orders',
+    'apps.payment',
+    'apps.meiduo_admin',
+
+
 ]
 
 MIDDLEWARE = [
@@ -64,6 +74,9 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
     'http://localhost:8080',
     'http://www.meiduo.site:8080',
+    'http://127.0.0.1:9090',
+    'http://localhost:9090',
+    'http://www.meiduo.site:9090',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -132,6 +145,21 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    "history": {  # 用户浏览记录
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "carts": {#购物车
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/5",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    }
+},
+
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
@@ -262,3 +290,46 @@ CRONJOBS = [
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
 FDFS_URL='http://image.meiduo.site:8888/'
+
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': '192.168.74.128:9200/', # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'meiduo_mall', # Elasticsearch建立的索引库的名称
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# 指定haystack分页时每页记录的个数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+
+
+
+# 对接支付宝
+ALIPAY_APPID = '2016110100783977' # 应用ID
+ALIPAY_DEBUG = True # 调试模式，对接沙箱应用时为True,对接正式应用时为False
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do' # 对接支付宝的网关，如果对接沙箱应用就是测试网关
+ALIPAY_RETURN_URL = "http://www.meiduo.site:8080/pay_success.html" # 支付成功后的回调地址
+
+##############################################################
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
+    #认证类. 先进行token的验证. 如果没有携带token,就进行session认证.如果session也没有携带就基本认证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+#########################################################
+import datetime
+# JWT配置
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'apps.meiduo_admin.utils.jwt_response_payload_handler',
+}

@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views import View
 from django_redis import get_redis_connection
 
+from apps.goods.models import SKU
 from apps.users.models import User, Address
 import logging
 
@@ -17,7 +18,7 @@ from celery_tasks.email.tasks import send_verify_email
 from meiduo_mall.utils.views import LoginRequiredJSONMixin
 
 logger = logging.getLogger('django')
-
+from apps.carts.utils import merge_cart_cookie_to_redis
 
 class UsernameCountView(View):
     def get(self, request, username):
@@ -156,6 +157,10 @@ class LoginView(View):
         response = JsonResponse({'code': 0, 'errmsg': 'ok'})
         # 9.设置cookie
         response.set_cookie('username', user.username, max_age=14 * 24 * 3600)
+
+        # 合并购物车
+
+        response = merge_cart_cookie_to_redis(request, user, response)
         return response
 
 
@@ -534,3 +539,43 @@ class UpdatePasswordView(View):
         response = http.JsonResponse({'code': .0, 'errmsg': 'ok'})
         response.delete_cookie('username')
         return response
+
+class UserBrowseHistory(LoginRequiredJSONMixin,View):
+    """用户浏览记录"""
+    def get(self,request):
+        '''展示用户浏览记录'''
+        user_id=request.user.id
+        redis_conn = get_redis_connection('history')
+        sku_id_list=redis_conn.lrange('history_%s'%user_id,0,-1)
+        skus=[]
+        for s_id in sku_id_list:
+            sku=SKU.objects.get(id=s_id)
+            skus.append({
+            "id":sku.id,
+            "name":sku.name,
+            "default_image_url":sku.default_image.url,
+            "price":sku.price,
+            "comments":sku.comments
+        })
+        return http.JsonResponse({"code":"0","errmsg":"OK","skus":skus})
+
+    def post(self,request):
+        '''保存用户浏览记录'''
+        # 获取sku_id
+        json_dict=json.loads(request.body.decode())
+        sku_id=json_dict.get('sku_id')
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return http.JsonResponse({'code':400,'errmsg':'sku_id参数错误'})
+        redis_conn=get_redis_connection('history')
+        pl=redis_conn.pipeline()
+        user_id=request.user.id
+        # 先去重
+        pl.lrem('history_%s'%user_id,0,sku_id)
+        # 再添加
+        pl.lpush('history_%s'%user_id,sku_id)
+        # 后截取
+        pl.ltrim('history_%s'%user_id,0,4)
+        pl.execute()
+        return http.JsonResponse({'code':0,'errmsg':'ok'})

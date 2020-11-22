@@ -61,7 +61,7 @@
 	
 			<div @mouseenter="get_cart" class="guest_cart fr" v-cloak>
     <a href="#" class="cart_name fl">我的购物车</a>
-    <div class="goods_count fl" id="show_count">15</div>
+    <div class="goods_count fl" id="show_count">[[cart_total_count]]</div>
     <ul class="cart_goods_show">
         <li v-for="sku in carts">
             <img :src="sku.default_image_url" alt="商品图片">

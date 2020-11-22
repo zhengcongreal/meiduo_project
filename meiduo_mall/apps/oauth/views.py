@@ -1,6 +1,6 @@
 import json
 import re
-
+from apps.carts.utils import merge_cart_cookie_to_redis
 from QQLoginTool.QQtool import OAuthQQ
 from django import http
 from django.conf import settings
@@ -86,6 +86,8 @@ class QQUserView(View):
             response = http.JsonResponse({'code': 0, 'errmsg': 'ok'})
             # 将用户信息写入到 cookie 中，有效期14天
             response.set_cookie('username', user.username, max_age=14 * 24 * 3600)
+            # 合并购物车
+            response = merge_cart_cookie_to_redis(request, user, response)
             return response
 
     def post(self, request):
@@ -157,4 +159,6 @@ class QQUserView(View):
         # 7.创建响应对象:
         response = http.JsonResponse({'code': 0, 'errmsg': 'ok'})
         response.set_cookie('username', user.username, max_age=3600 * 24 * 14)
+        # 合并购物车
+        response = merge_cart_cookie_to_redis(request, user, response)
         return response

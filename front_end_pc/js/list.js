@@ -177,7 +177,9 @@ var vm = new Vue({
                 .then(response => {
                      this.hot_skus = response.data.hot_skus
                      for(let i=0; i<this.hot_skus.length; i++){
-                        this.hot_skus[i].url = '/goods/' + this.skus[i].id + ".html";
+
+                        this.hot_skus[i].url = '/goods/' + this.hot_skus[i].id + ".html";
+
                     }
                 })
                 .catch(error => {

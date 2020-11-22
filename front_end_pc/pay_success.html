@@ -8,6 +8,7 @@
     <script type="text/javascript" src="js/host.js"></script>
     <script type="text/javascript" src="js/vue-2.5.16.js"></script>
     <script type="text/javascript" src="js/axios-0.18.0.min.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
 </head>
 <body>
     <div id="app">
@@ -80,6 +81,7 @@
                 token: sessionStorage.token || localStorage.token,
             },
             mounted: function(){
+                	this.username = getCookie('username');
                 axios.put(this.host+'/payment/status/'+document.location.search,{}, {
                         responseType: 'json',
                         withCredentials:true
@@ -101,5 +103,6 @@
             }
         })
     </script>
+
 </body>
 </html>

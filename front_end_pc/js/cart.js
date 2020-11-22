@@ -61,6 +61,7 @@ var vm = new Vue({
             })
     },
     methods: {
+
         // 退出
         logoutfunc: function(){
             var url = this.host + '/logout/';
@@ -178,5 +179,15 @@ var vm = new Vue({
                     console.log(error);
                 })
         },
+
+        //判断是否是空购物车
+        redict_url:function(){
+
+            if(this.cart.length != 0){
+                location.href="place_order.html"
+            }
+
+        }
+        ,
     }
 });

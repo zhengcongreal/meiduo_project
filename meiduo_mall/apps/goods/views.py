@@ -11,7 +11,38 @@ from apps.goods.models import SKU
 from apps.goods.utils import get_breadcrumb
 
 
+from haystack.views import SearchView
 
+
+class MySearchView(SearchView):
+    """自定义商品搜索视图
+       目的：为了重写create_response(),并返回检索后的JSON数据
+       GET /search/
+       """
+
+    def create_response(self):
+        """返回检索后的JSON数据"""
+        # 获取检索到的数据
+        context = self.get_context()
+
+        # 获取检索到的模型数据
+        results = context['page'].object_list
+
+        # 遍历results，取出检索到的SKU，再转字典列表
+        data_list = []
+        for result in results:
+            data_list.append({
+                'id': result.object.id,
+                'name': result.object.name,
+                'price': result.object.price,
+                'default_image_url': result.object.default_image.url,
+                'searchkey': context.get('query'),
+                'page_size': context['page'].paginator.num_pages,  # 分页后的总页数
+                'count': context['page'].paginator.count
+            })
+
+        # 将检索到数据转成JSON返回即可
+        return http.JsonResponse(data_list, safe=False)
 
 
 class HotGoodsView(View):
