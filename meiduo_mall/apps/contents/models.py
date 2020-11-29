@@ -75,6 +75,7 @@ class GoodsChannelGroup(BaseModel):
     def __str__(self):
         return self.name
 
+
 class GoodsChannel(BaseModel):
     """
     商品频道表展示的内容

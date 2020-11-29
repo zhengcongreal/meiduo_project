@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.fields import ImageField
 
 from meiduo_mall.utils.models import BaseModel
 from apps.contents.models import GoodsCategory
@@ -82,7 +83,7 @@ class SPUSpecification(BaseModel):
 
     def __str__(self):
         return '%s: %s' % (self.spu.name, self.name)
-
+    objects=models.Manager()
 
 class SpecificationOption(BaseModel):
     """规格选项"""
