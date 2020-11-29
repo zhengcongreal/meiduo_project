@@ -71,12 +71,16 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = (
     'http://47.101.190.130',
+    'http://47.101.190.130:90',
+    'http://47.101.190.130:80',
+    'http://47.101.190.130:8001',
     'http://127.0.0.1:8080',
     'http://localhost:8080',
     'http://www.meiduo.site:8080',
     'http://127.0.0.1:9090',
     'http://localhost:9090',
     'http://www.meiduo.site:9090',
+
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
