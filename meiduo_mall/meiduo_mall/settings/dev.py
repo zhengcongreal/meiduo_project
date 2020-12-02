@@ -272,7 +272,8 @@ EMAIL_HOST = 'smtp.qq.com'
 # 端口号
 # EMAIL_PORT = 25
 EMAIL_PORT = 465
-
+# 和SMTP对话是否使用SSL安全连接端口465
+EMAIL_USE_SSL = True
 # 下面的内容是可变的, 随后台设置的不同而改变:
 # 发送邮件的邮箱
 EMAIL_HOST_USER = '904307799@qq.com'
