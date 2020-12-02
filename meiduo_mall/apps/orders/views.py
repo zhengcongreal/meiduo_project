@@ -37,7 +37,7 @@ class PersonalOrder(LoginRequiredJSONMixin,View):
             paginator_set = paginator.page(page)
         except EmptyPage:
             return http.JsonResponse({'code': 0, 'errmsg': '获取分页数据失败！'})
-        total_page = paginator.num_pages
+        total_page = paginator.num_pages if paginator_set else 0
 
         orders_list=[]
         for order in paginator_set:
