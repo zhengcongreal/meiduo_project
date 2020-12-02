@@ -270,7 +270,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # 我们使用的 smtp服务器 地址
 EMAIL_HOST = 'smtp.qq.com'
 # 端口号
-EMAIL_PORT = 25
+# EMAIL_PORT = 25
+EMAIL_PORT = 465
+
 # 下面的内容是可变的, 随后台设置的不同而改变:
 # 发送邮件的邮箱
 EMAIL_HOST_USER = '904307799@qq.com'
