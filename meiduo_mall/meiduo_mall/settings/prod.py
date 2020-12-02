@@ -279,7 +279,7 @@ EMAIL_HOST_PASSWORD = 'mvsoiuhxqruobdaa'
 # 收件人看到的发件人
 EMAIL_FROM = 'zhengcong<904307799@qq.com>'
 # 邮箱验证链接
-EMAIL_VERIFY_URL = 'http://47.101.190.130:8080/success_verify_email.html?token='
+EMAIL_VERIFY_URL = 'http://47.101.190.130:90/success_verify_email.html?token='
 
 # 指定django系统使用的文件存储类:
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
@@ -315,7 +315,7 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
 ALIPAY_APPID = '2016110100783977' # 应用ID
 ALIPAY_DEBUG = True # 调试模式，对接沙箱应用时为True,对接正式应用时为False
 ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do' # 对接支付宝的网关，如果对接沙箱应用就是测试网关
-ALIPAY_RETURN_URL = "http://www.meiduo.site:8080/pay_success.html" # 支付成功后的回调地址
+ALIPAY_RETURN_URL = "http://47.101.190.130:90/pay_success.html" # 支付成功后的回调地址
 
 ##############################################################
 REST_FRAMEWORK = {
