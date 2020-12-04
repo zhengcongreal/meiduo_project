@@ -119,7 +119,7 @@ WSGI_APPLICATION = 'meiduo_mall.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # 数据库引擎
-        'HOST': '42.192.248.247', # 数据库主机
+        'HOST': '47.101.190.130', # 数据库主机
         'PORT': 3306, # 数据库端口
         'USER': 'root', # 数据库用户名
         'PASSWORD': 'mysql', # 数据库用户密码
@@ -131,35 +131,35 @@ DATABASES = {
 CACHES = {
     "default": { # 默认存储信息: 存到 0 号库
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://42.192.248.247:6379/0",
+        "LOCATION": "redis://47.101.190.130/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": { # session 信息: 存到 1 号库
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://42.192.248.247:6379/1",
+        "LOCATION": "redis://47.101.190.130:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "verify_code": {  # 验证码信息: 存到 2 号库
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://42.192.248.247:6379/2",
+        "LOCATION": "redis://47.101.190.130:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "history": {  # 用户浏览记录
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://42.192.248.247:6379/3",
+        "LOCATION": "redis://47.101.190.130:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "carts": {#购物车
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://42.192.248.247:6379/5",
+        "LOCATION": "redis://47.101.190.130:6379/5",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
     }
@@ -262,7 +262,7 @@ QQ_CLIENT_ID = '101474184'
 # 我们申请的 客户端秘钥
 QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
 # 我们申请时添加的: 登录成功后回调的路径
-QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
+QQ_REDIRECT_URI = 'http://47.101.190.130:90/oauth_callback.html'
 
 
 # 发送短信的相关设置, 这些设置是当用户没有发送相关字段时, 默认使用的内容:
@@ -283,7 +283,7 @@ EMAIL_HOST_PASSWORD = 'mvsoiuhxqruobdaa'
 # 收件人看到的发件人
 EMAIL_FROM = 'zhengcong<904307799@qq.com>'
 # 邮箱验证链接
-EMAIL_VERIFY_URL = 'http://42.192.248.247:90/success_verify_email.html?token='
+EMAIL_VERIFY_URL = 'http://47.101.190.130:90/success_verify_email.html?token='
 
 # 指定django系统使用的文件存储类:
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
@@ -297,13 +297,13 @@ CRONJOBS = [
 # 解决 crontab 中文问题
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
-FDFS_URL='http://42.192.248.247:8888/'
+FDFS_URL='http://47.101.190.130:8888/'
 
 # Haystack
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': '42.192.248.247:9200/', # Elasticsearch服务器ip地址，端口号固定为9200
+        'URL': '47.101.190.130:9200/', # Elasticsearch服务器ip地址，端口号固定为9200
         'INDEX_NAME': 'meiduo_mall', # Elasticsearch建立的索引库的名称
     },
 }
@@ -319,7 +319,7 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
 ALIPAY_APPID = '2016110100783977' # 应用ID
 ALIPAY_DEBUG = True # 调试模式，对接沙箱应用时为True,对接正式应用时为False
 ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do' # 对接支付宝的网关，如果对接沙箱应用就是测试网关
-ALIPAY_RETURN_URL = "http://42.192.248.247:90/pay_success.html" # 支付成功后的回调地址
+ALIPAY_RETURN_URL = "http://47.101.190.130:90/pay_success.html" # 支付成功后的回调地址
 
 ##############################################################
 REST_FRAMEWORK = {

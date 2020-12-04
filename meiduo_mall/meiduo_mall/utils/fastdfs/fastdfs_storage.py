@@ -30,6 +30,4 @@ class FastDFSStorage(Storage):
         :param name: 外界的image字段传入到文件名：file_id=group1/M00/00/01/CtM3BVrLmc-AJdVSAAEI5Wm7zaw8639396
         :return: http://192.168.103.100:8888/group1/M00/00/01/CtM3BVrLmc-AJdVSAAEI5Wm7zaw8639396
         """
-        # return 'http://192.168.103.100:8888/' + name
-        # return 'http://image.meiduo.site:8888/' + name
         return settings.FDFS_URL + name
